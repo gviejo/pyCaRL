@@ -2,7 +2,6 @@ import numpy as np
 from time import time
 import scipy
 import glob
-import yaml
 import sys,os
 import h5py as hd
 from time import time
@@ -34,7 +33,7 @@ def play(data, gain = 1, magnification = 2, looping = True, fr = 30):
 	return
 
 
-path = '/home/guillaume/CaRL/data'
+path = '../data'
 # files = glob.glob(os.path.join(path, '*.avi'))
 # # read the data
 # video_info, videos, dims = get_video_info(files)
@@ -61,8 +60,9 @@ play(fa, 1, 2)
 
 
 # Initiate a pool of agents with random position
-
-xyagents = np.random.randint()
+n = 10
+xyag = np.vstack((np.random.randint(fa.shape[1], size = 10),
+				np.random.randint(fa.shape[2], size = 10 ))).T
 
 
 

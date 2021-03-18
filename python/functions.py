@@ -6,7 +6,6 @@ import warnings
 import pandas as pd
 import re
 import av
-from tqdm import tqdm
 import os
 import sys
 import h5py as hd
