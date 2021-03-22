@@ -36,13 +36,13 @@ def selectAction(p, n, na):
 def getdist(cpos, n, m):
 	tmp = cpos.reshape(n,2,1)
 	dist = np.sqrt(np.sum(np.power(tmp - tmp.T, 2), 1))
-	dist = np.exp(-dist * 0.1)*m
+	dist = np.exp(-dist * 0.05)*m
 	np.fill_diagonal(dist, 0)
 	return dist
 
 @jit(nopython=True)
 def getr(fl, ds):
-	return np.tanh(fl*0.1) - ds
+	return np.tanh(fl*0.1) - np.tanh(ds)
 
 # @jit(nopython=True)
 def updatev(v, cpos, alpha, r, gamma, npos, n):
@@ -113,7 +113,7 @@ fa = fafast - faslow
 
 
 # Initiate a pool of agents with random position
-n = 30
+n = 20
 cpos = np.vstack((np.random.randint(fa.shape[1], size = n),
 				np.random.randint(fa.shape[2], size = n))).T
 
@@ -131,11 +131,16 @@ nextpos2v = np.tile(np.atleast_2d(np.arange(0,n)).T, possible_actions.shape[2])
 p2nextact = np.tile(np.atleast_2d(np.arange(0,possible_actions.shape[2])),(n,1))
 maxfa = fa.max((1,2))
 
+
 # pos = [xyag]
-for i in range(100):
-	# t1 = time.time()
-	print(i)
+for i in range(10000):
+	t1 = time.time()
+	# print(i)
 	for j in range(T):
+		
+		if j%250 == 0:
+			v[np.abs(v)<1e-2] = 0.0
+			v = v - 0.05 * v
 
 		nextpos = getnextpos(cpos, n, na, possible_actions)
 
@@ -150,17 +155,21 @@ for i in range(100):
 
 		npos = nextpos[np.arange(n),:,act].T
 
-		dist = getdist(cpos, n, maxfa[j])
+		# dist = getdist(cpos, n, maxfa[j])
 
 		fl = fa[j][cpos[:,0],cpos[:,1]]
 
-		r = getr(fl, dist.max(0))
+		# r = getr(fl, dist.max(0))
+		r = getr(fl, np.zeros(n))
 
 		v = updatev(v, cpos, alpha, r, gamma, npos, n)
 
 		cpos = npos.T
+
+	# v[v<0] = 0.0
+
 	
-	# print(time.time() - t1)
+	print(i, time.time() - t1)
 
 
 
